@@ -1,0 +1,32 @@
+name: Agent Agentique CI Pipeline (Plateforme Interne)
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  test-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Récupération du code source
+      uses: actions/checkout@v4
+
+    - name: Configuration de Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Installation des dépendances (Légères)
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Exécution des 20 tests sur la plateforme interne
+      run: |
+        pytest test_agent.py -v --durations=0
+      env:
+        # On passe l'URL de votre plateforme interne et sa clé API de manière sécurisée
+        INTERNAL_AGENT_API_URL: "http://127.0.0.1:7860/api/v1/run/87a0047e-83a1-4244-ab3e-c8df3ca85f0e"
+        INTERNAL_API_KEY: ${{ secrets.APIKEY1 }}
